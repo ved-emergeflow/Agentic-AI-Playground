@@ -1,0 +1,143 @@
+Index: .idea/modules.xml
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+deleted file mode 100644
+--- a/.idea/modules.xml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectModuleManager">
+-    <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/AI_Sandbox_Project.iml" filepath="$PROJECT_DIR$/.idea/AI_Sandbox_Project.iml" />
+-    </modules>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,8 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+Index: .idea/AI_Sandbox_Project.iml
+===================================================================
+diff --git a/.idea/AI_Sandbox_Project.iml b/.idea/AI_Sandbox_Project.iml
+deleted file mode 100644
+--- a/.idea/AI_Sandbox_Project.iml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,10 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module type="PYTHON_MODULE" version="4">
+-  <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$">
+-      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+-    </content>
+-    <orderEntry type="jdk" jdkName="Python 3.13 (AI_Sandbox_Project)" jdkType="Python SDK" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+deleted file mode 100644
+--- a/.idea/misc.xml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,7 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="Black">
+-    <option name="sdkName" value="Python 3.13 (AI_Sandbox_Project)" />
+-  </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (AI_Sandbox_Project)" project-jdk-type="Python SDK" />
+-</project>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+deleted file mode 100644
+--- a/.idea/inspectionProfiles/profiles_settings.xml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,6 +0,0 @@
+-<component name="InspectionProjectProfileManager">
+-  <settings>
+-    <option name="USE_PROJECT_PROFILE" value="false" />
+-    <version value="1.0" />
+-  </settings>
+-</component>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+deleted file mode 100644
+--- a/.idea/vcs.xml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/Project_Default.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+deleted file mode 100644
+--- a/.idea/inspectionProfiles/Project_Default.xml	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,6 +0,0 @@
+-<component name="InspectionProjectProfileManager">
+-  <profile version="1.0">
+-    <option name="myName" value="Project Default" />
+-    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+-  </profile>
+-</component>
+\ No newline at end of file
+Index: .gitignore
+===================================================================
+diff --git a/.gitignore b/.gitignore
+deleted file mode 100644
+--- a/.gitignore	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,2 +0,0 @@
+-.venv
+-.env
+\ No newline at end of file
+Index: requirements.txt
+===================================================================
+diff --git a/requirements.txt b/requirements.txt
+deleted file mode 100644
+--- a/requirements.txt	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
++++ /dev/null	(revision d57bab8146e25b5a0cbe7cfd820a0aa174c6c786)
+@@ -1,7 +0,0 @@
+-python-dotenv~=1.2.1
+-langchain~=1.0.3
+-langchain-openai~=1.0.2
+-langchain-core~=1.0.3
+-langgraph~=1.0.2
+-langchain-google-genai~=3.0.1
+-pydantic~=2.12.4
+\ No newline at end of file
