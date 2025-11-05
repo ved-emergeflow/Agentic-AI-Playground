@@ -1,0 +1,174 @@
+import os
+from typing import TypedDict, Annotated, Literal
+from dotenv import load_dotenv
+from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langgraph.graph import add_messages
+from langgraph.graph import StateGraph, START, END
+# from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel, Field
+
+gemini_api_key = os.getenv('GOOGLE_API_KEY')
+
+class SummarizerState(TypedDict):
+    input: str
+    messages: Annotated[list[BaseMessage], add_messages]
+    critique_score: int
+    summary: str
+    feedback: str
+    threshold: int
+    counter: int
+
+
+model = ChatGoogleGenerativeAI(
+    model='gemini-2.5-flash',
+    api_key=gemini_api_key,
+)
+# model2 = ChatOllama(
+#     model='deepseek-r1:1.5b',
+#     temperature=0.4
+# )
+
+class Summary(BaseModel):
+    summary: str = Field(description='Summarized text created by LLM')
+
+class Critique(BaseModel):
+    score: int = Field(description='Summary score out of 10')
+    feedback: str =  Field(description='Feedback for the generated summary to make improvements')
+
+def get_summarizer_model():
+
+    summarizer_input_prompt = ChatPromptTemplate.from_template(
+    """
+    You are a Summarizing Agent. You are given the following text:
+    {user_input}
+
+    Create a concise summary of this text.
+    Keep the length under 500 words.
+    """
+    )
+
+    return summarizer_input_prompt | model.with_structured_output(Summary)
+
+def get_resummarizer_model():
+
+    resummary_input_prompt = ChatPromptTemplate.from_template(
+    """
+    Your are a Summary Rewriter. You are given the text: {user_input}, old summary: {summary} and feedback: {feedback} on the summary.
+    Rewrite the summary taking the feedback into consideration.
+    Keep the new summary under 500 words as well.
+
+    """
+    )
+
+    return resummary_input_prompt | model.with_structured_output(Summary)
+
+def get_critic_model():
+
+    critique_input_prompt = ChatPromptTemplate.from_template(
+    """
+    You are a Summary Critique Agent. You review the provided summary: {summary} and review it.
+    Provie a score out of 10 based on 1.Conciseness 2.Depth 3.Accuracy
+    Also provide feedback on the summary for improvements.
+    Keep the feedback short and concise under 200 words.
+
+    """
+    )
+
+    return critique_input_prompt | model.with_structured_output(Critique)
+
+
+def get_summary(state: SummarizerState):
+    user_input = state['input']
+    structured_summarizer_model = get_summarizer_model()
+    res = structured_summarizer_model.invoke(
+    {
+        'user_input': user_input,
+    }
+    )
+    return {
+        'messages': AIMessage(content=f'Generated Summary is: {res.summary}'),
+        'summary' : res.summary
+    }
+
+def rewrite_summary(state: SummarizerState):
+    
+    summary = state['summary']
+    feedback = state['feedback']
+    user_input = state['input']
+
+    resummary_structured_model = get_resummarizer_model()
+    res = resummary_structured_model.invoke(
+        {
+            'user_input': user_input,
+            'summary': summary,
+            'feedback': feedback
+        }
+    )
+
+    return{
+        'messages': AIMessage(content=f'Rewritten Summary is : {res.summary}'),
+        'summary': res.summary
+    }
+
+def get_critique_score(state: SummarizerState):
+    summary = state['summary']
+
+    structured_critique_model = get_critic_model()
+    res = structured_critique_model.invoke(
+        {
+            'summary': summary,
+        }
+    )
+
+    return {
+        'messages': AIMessage(content=f'Critique Score : {str(res.score)} and feedback is {res.feedback}'),
+        'critique_score': res.score,
+        'counter': state['counter']+1,
+        'feedback': res.feedback
+    }
+
+def does_summary_pass(state: SummarizerState)-> Literal['Pass', 'Fail']:
+
+    score = state['critique_score']
+    threshold  = state['threshold']
+    counter = state['counter']
+
+    if counter > 3:
+        return 'Pass'
+    else:
+        if score >= threshold:
+            return 'Pass'
+        else:
+            return 'Fail'
+
+
+
+def create_agent():
+
+    graph = StateGraph(SummarizerState)
+    graph.add_node('summarizer', get_summary)
+    graph.add_node('resummarizer', rewrite_summary)
+    graph.add_node('critique', get_critique_score)
+    graph.add_edge('summarizer', 'critique')
+    graph.add_edge(START, 'summarizer')
+    graph.add_edge('resummarizer', 'critique')
+    graph.add_conditional_edges('critique', does_summary_pass, {
+        'Pass': END,
+        'Fail':'resummarizer'
+    })
+
+    return graph
+
+def print_graph():
+
+    graph = create_agent()
+    return Image(graph.graph().draw_mermaid_png())
+
+def load_agent():
+
+    graph = create_agent()
+    return graph.compile()
