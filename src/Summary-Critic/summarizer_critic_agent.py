@@ -1,10 +1,10 @@
 import os
 from typing import TypedDict, Annotated, Literal
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from langchain.agents import create_agent
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+# from langchain_openai import ChatOpenAI
+from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import add_messages
 from langgraph.graph import StateGraph, START, END
 # from langchain_ollama import ChatOllama
