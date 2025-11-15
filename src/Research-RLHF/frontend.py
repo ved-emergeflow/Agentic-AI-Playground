@@ -2,7 +2,8 @@ import uuid
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
-from research_rlhf_agent_groq import get_groq_agent
+# from research_rlhf_agent_groq import get_groq_agent
+from research_rlhf_advanced import get_advanced_research_agent
 import streamlit as st
 from datetime import datetime
 import json
@@ -19,7 +20,7 @@ if "thread_id" not in st.session_state:
     st.session_state.thread_id = str(uuid.uuid4())
 
 if "agent" not in st.session_state:
-    st.session_state.agent = get_groq_agent(checkpointer)
+    st.session_state.agent = get_advanced_research_agent(checkpointer)
 
 config = {
     'configurable': {
@@ -29,6 +30,7 @@ config = {
 
 st.title("💬 Chat Interface")
 
+# --- session state defaults ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -44,7 +46,14 @@ if "interrupt_response" not in st.session_state:
 if "interrupt_value" not in st.session_state:
     st.session_state.interrupt_value = None
 
+# Add state for product & competitors inputs (optional defaults)
+if "product_input" not in st.session_state:
+    st.session_state.product_input = ""
 
+if "competitors_input" not in st.session_state:
+    st.session_state.competitors_input = ""  # comma-separated string
+
+# --- helper functions ---
 def get_last_message_with_content(messages_list):
     """Find the last message with actual content"""
     for msg in reversed(messages_list):
@@ -52,16 +61,20 @@ def get_last_message_with_content(messages_list):
             return msg.content
     return None
 
-
 def display_messages():
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+# --- input area: two distinct inputs for product and competitors ---
+with st.sidebar:
+    st.header("Inputs")
+    st.text_input("Product name", key="product_input", placeholder="Enter product name (e.g., Widget X)")
+    st.text_input("Competitors (comma-separated)", key="competitors_input", placeholder="Competitor A, Competitor B")
 
 display_messages()
 
-# Handle HITL input
+# Handle HITL input (unchanged)
 if st.session_state.interrupted and st.session_state.interrupt_response:
     # Display the agent's response that caused interrupt
     with st.chat_message("assistant"):
@@ -120,44 +133,39 @@ if st.session_state.interrupted and st.session_state.interrupt_response:
                                 "content": final_response,
                                 "timestamp": datetime.now()
                             })
-                        st.markdown(f"\nInsights gained: {response['insights']}")
+                        st.markdown(f"\nInsights gained: {response.get('insights')}")
                         st.success("✅ Research completed!")
 
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
                     import traceback
-
                     st.error(traceback.format_exc())
 
-# User input
-elif prompt := st.chat_input("Type your message..."):
+# Main chat input (user message). We pull product & competitors from sidebar inputs.
+elif user_msg := st.chat_input("Type your message..."):
+    # Read product & competitors from session_state (set via sidebar text_inputs)
+    product = st.session_state.get("product_input", "").strip()
+    competitors_raw = st.session_state.get("competitors_input", "").strip()
+    # convert comma-separated competitors to list (clean)
+    competitors = [c.strip() for c in competitors_raw.split(",") if c.strip()] if competitors_raw else []
+
+    # Save the chat message and also include product/competitors in what the agent gets
     st.session_state.messages.append({
         "role": "user",
-        "content": prompt,
+        "content": f"Message: {user_msg}\nProduct: {product}\nCompetitors: {', '.join(competitors)}",
         "timestamp": datetime.now()
     })
 
     with st.chat_message("user"):
-        st.markdown(prompt)
+        # show what the user sent along with product/competitors for clarity
+        st.markdown(f"**Product:** {product}\n\n**Competitors:** {', '.join(competitors)}\n\n**Message:** {user_msg}")
 
     with st.chat_message("assistant"):
         with st.spinner("Agent thinking..."):
             init_state = {
-                'messages': HumanMessage(content=prompt),
-                'user_input': prompt,
-                'insights': st.session_state.insights,
-                'first_run': True,
-                'approved': False,
-                'counter': 0,
-                'max_loop': 2,
-                'changes': [],
-                'steps': '',
-                'reasoning': '',
-                'first_response': '',
-                'current_response': '',
-                'final_response': '',
-                'jump_to': '',
-                'content': []
+                'messages': [HumanMessage(content=f'Perform web search on the product: {product} and their competitors: {competitors}')],
+                'product': product,
+                'competitors': competitors
             }
 
             try:
@@ -191,11 +199,10 @@ elif prompt := st.chat_input("Type your message..."):
                             "content": final_response,
                             "timestamp": datetime.now()
                         })
-                    st.markdown(f"\nInsights gained: {response['insights']}")
+                    st.markdown(f"\nInsights gained: {response.get('insights')}")
                     st.success("✅ Research completed!")
 
             except Exception as e:
                 st.error(f"Error: {str(e)}")
                 import traceback
-
                 st.error(traceback.format_exc())
