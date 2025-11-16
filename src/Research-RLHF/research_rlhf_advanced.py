@@ -1,5 +1,5 @@
 # ----------------------------------------------- Imports ---------------------------------------------------
-
+import json
 import os
 from typing import TypedDict, Annotated, Literal
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage, ToolMessage
@@ -7,7 +7,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain.tools import tool
 from langgraph.types import Command, interrupt
 from langgraph.graph import add_messages
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START
 from langchain_groq import ChatGroq
 from langchain_community.tools import DuckDuckGoSearchRun, DuckDuckGoSearchResults
 from langchain_community.utilities import SearxSearchWrapper, DuckDuckGoSearchAPIWrapper
@@ -347,7 +347,7 @@ search_graph.add_edge('run_tools', 'call_llm')
 def create_research(state: ResearchState):
     print('\nCreating Research.....')
 
-    messages = [SystemMessage(content=f"""
+    messages = [SystemMessage(content="""
                     You are a researcher Agent. Your task is to create a research report on the given product information and competitors to figure out target age groups, genders and personas. 
                               """),
                 HumanMessage(content=f"""
